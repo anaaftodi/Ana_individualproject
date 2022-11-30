@@ -1,5 +1,7 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include<iostream>
+#include "Header.h"
 int main() {
 
-	std::cout << std::endl << "Hello world!";
+	return 0;
 }
