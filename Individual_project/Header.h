@@ -78,6 +78,21 @@ class location {
 			return copy;
 		}
 
+		~location() {
+			cout << endl << "Location destructor";
+			if (this->noOfSeatsPerRow != nullptr) {
+				delete[]this->noOfSeatsPerRow;
+			}
+		}
+		location() {
+			cout << endl << "Calling location default constructor";
+		}
+		location(int noOfSeats, int noOfRows, int* noOfSeatsPerRow) {
+			this->setNoOfSeats(noOfSeats);
+			this->setNoOfRows(noOfRows);
+			this->setNoOfSeatsPerRow(noOfSeatsPerRow,noOfRows);
+		}
+
 	private:
 
 		static int* copyArray(int* array, int noElements) {
