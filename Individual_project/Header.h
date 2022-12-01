@@ -92,7 +92,35 @@ class location {
 			this->setNoOfRows(noOfRows);
 			this->setNoOfSeatsPerRow(noOfSeatsPerRow,noOfRows);
 		}
-
+		location(const location& location){
+			cout << endl << "Copy constructor";
+			this->setNoOfRows(location.noOfRows);
+			this->setNoOfSeats(location.noOfSeats);
+			this->setZones(location.noOfZones);
+			this->setNoOfSeatsPerRow(location.noOfSeatsPerRow,location.noOfRows);
+		}
+		void operator=(const location& location) {
+			if (this == &location) {
+				return;
+			}
+			this->noOfRows = location.noOfRows;
+			this->noOfSeats = location.noOfSeats;
+			this->noOfZones = location.noOfZones;
+			if (this->noOfSeatsPerRow) {
+				delete[]this->noOfSeatsPerRow;
+				this->noOfSeatsPerRow = nullptr;
+			}
+			if (location.noOfSeatsPerRow != nullptr) {
+				this->noOfSeatsPerRow = new int[location.noOfRows + 1];
+				for (int i = 0; i < location.noOfRows; i++) {
+					this->noOfSeatsPerRow[i] = location.noOfSeatsPerRow[i];
+				}
+			}
+			else this->noOfSeatsPerRow = nullptr;
+		}
+		friend void operator<< (ostream& out, event event);
+		friend void operator>> (istream& in, event& event);
+		
 	private:
 
 		static int* copyArray(int* array, int noElements) {
@@ -104,3 +132,104 @@ class location {
 	}
 		
 };
+
+class event {
+	 
+	private:
+
+		char* name=nullptr;
+		string time=" ";
+		string date=" ";
+		string place = " ";
+		string duration = " ";
+
+		static int NO_EVENTS;
+		
+	public:
+
+		char* getName() {
+			char* nameCopy = new char[strlen(this->name) + 1];
+			strcpy(nameCopy, this->name);
+			return nameCopy;
+		}
+		void setName(const char* newName) {
+			if (this->name != nullptr) {
+				delete[] this->name;
+			}
+			this->name = new char[strlen(newName) + 1];
+			strcpy(this->name, newName);
+		}
+		string getTime() {
+			return this->time;
+		}
+		void setTime(string time) {
+			this->time = time;
+		}
+		string getDate() {
+			return this->date;
+		}
+		void setDate(string date) {
+			this->date = date;
+		}
+		string getPlace() {
+			return this->place;
+		}
+		void setPlace(string place) {
+			this->place = place;
+		}
+		string getDuration() {
+			return this->duration;
+		}
+		void setDuration(string duration) {
+			this->duration = duration;
+		}
+		~event() {
+			cout << endl << "Event destructor";
+			if (this->name != nullptr) {
+				delete[]this->name;
+			}
+			event::NO_EVENTS -= 1;
+		}
+		event() {
+			cout << endl << "Calling event default constructor";
+		}
+		event(char* name, string date, string place, string time) {
+			this->setName(name);
+			this->setDate(date);
+			this->setPlace(place);
+			this->setTime(time);
+		}
+		event(const event& event){
+			cout << endl << "Copy constructor";
+			this->setName(event.name);
+			this->setDate(event.date);
+			this->setDuration(event.duration);
+			this->setPlace(event.place);
+			this->setTime(event.time);
+		}
+		static int getNoEvents() {
+			return event::NO_EVENTS;
+		}
+		void operator=(const event& event) {
+			if (this == &event) {
+				return;
+			}
+			this->date = event.date;
+			this->duration = event.duration;
+			this->place = event.place;
+			this->time = event.time;
+			if (this->name) {
+				delete[]this->name;
+				this->name = nullptr;
+			}
+			if (event.name != nullptr) {
+				this->name = new char[strlen(event.name) + 1];
+				memcpy(this->name, event.name, strlen(event.name) + 1);
+			}
+			else this->name = nullptr;
+		}
+		friend void operator<< (ostream& out, event event);
+		friend void operator>> (istream& in, event& event);
+};
+
+int event::NO_EVENTS = 0;
