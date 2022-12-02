@@ -16,22 +16,21 @@ private:
 
 public:
 
-	const static int MIN_NAME_SIZE=5;
+	const static int MIN_NAME_SIZE=3;
 
 	char* getName() {
-		char* nameCopy = new char[strlen(this->name) + 1];
-		strcpy(nameCopy, this->name);
+		char* nameCopy = this->copyArray(this->name);
 		return nameCopy;
 	}
-	void setName(const char* newName) {
+	void setName(const char* name) {
 		if (strlen(name) < Event::MIN_NAME_SIZE) {
 			throw "Invalid name";
 		}
 		if (this->name != nullptr) {
 			delete[] this->name;
 		}
-		this->name = new char[strlen(newName) + 1];
-		strcpy(this->name, newName);
+		this->name = new char[strlen(name) + 1];
+		strcpy(this->name, name);
 	}
 	string getTime() {
 		return this->time;
@@ -53,10 +52,14 @@ public:
 	}
 	~Event() {
 		cout << endl << "Event destructor";
+		this->deleteEvent();
+		Event::NO_EVENTS -= 1;
+	}
+	void deleteEvent(){
 		if (this->name != nullptr) {
 			delete[]this->name;
+			this->name = nullptr;
 		}
-		Event::NO_EVENTS -= 1;
 	}
 	Event() {
 		this->setDate("Unknown");
@@ -65,7 +68,7 @@ public:
 		cout << endl << "Calling event default constructor";
 		Event::NO_EVENTS += 1;
 	}
-	Event(char* name, string date, string place, string time) {
+	Event(const char* name, string date, string place, string time) {
 		this->setName(name);
 		this->setDate(date);
 		this->setPlace(place);
@@ -130,6 +133,16 @@ public:
 	}
 	friend void operator<< (ostream& out, Event& event);
 	friend void operator>> (istream& in, Event& event);
+
+	private:
+		static char* copyArray(const char* array) {
+			char* copy = new char[strlen(array) + 1];
+			for (int i = 0; i < strlen(array) + 1; i++) {
+				copy[i] = array[i];
+			}
+			copy[strlen(array) + 1] = '\0';
+			return copy;
+		}
 };
 
 int Event::NO_EVENTS = 0;

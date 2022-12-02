@@ -14,12 +14,6 @@ class Location {
 
 	public:
 
-		const static int MIN_NO_OF_SEATS = 50;
-		const static int MAX_NO_OF_SEATS = 10000;
-		const static int MIN_NO_OF_ROWS = 50;
-		const static int MAX_NO_OF_ROWS = 200;
-		const static int MIN_NO_OF_ZONES = 1;
-		const static int MAX_NO_OF_ZONES = 4;
 		const static int MIN_SEATS_PER_ROW = 1;
 		const static int MAX_SEATS_PER_ROW = 50;
 
@@ -27,9 +21,6 @@ class Location {
 			return this->noOfSeats;
 		}
 		void setNoOfSeats(int noOfSeats) {
-			if (noOfSeats<Location::MIN_NO_OF_SEATS || noOfSeats>Location::MAX_NO_OF_SEATS) {
-				throw "Invalid number of seats";
-			}
 			this->noOfSeats = noOfSeats;
 		}
 
@@ -37,19 +28,13 @@ class Location {
 			return this->noOfRows;
 		}
 		void setNoOfRows(int noOfRows) {
-			if (noOfRows<Location::MIN_NO_OF_ROWS || noOfRows>Location::MAX_NO_OF_ROWS) {
-				throw "Invalid number of rows";
-			}
 			this->noOfRows = noOfRows;
 		}
 
-		int getZones() {
+		int getNoOfZones() {
 			return this->noOfZones;
 		}
-		void setZones(int noOfZones) {
-			if (noOfZones<Location::MIN_NO_OF_ZONES || noOfZones>Location::MAX_NO_OF_ZONES) {
-				throw "Invalid zone";
-			}
+		void setNoOfZones(int noOfZones) {
 			this->noOfZones = noOfZones;
 		}
 
@@ -60,11 +45,11 @@ class Location {
 			if (noOfNewSeatsPerRow == nullptr) {
 				throw "The SeatsPerRow pointer is not alright";
 			}
-			for (int i = 0; i < noOfRows; i++) {
+			/*for (int i = 0; i < noOfRows; i++) {
 				if (noOfNewSeatsPerRow[i] < Location::MIN_SEATS_PER_ROW || noOfNewSeatsPerRow[i]>Location::MAX_SEATS_PER_ROW) {
 					throw "Number of seats is not alright";
 				}
-			}
+			}*/
 			if (this->noOfSeatsPerRow != nullptr)
 				delete[] this->noOfSeatsPerRow;
 			this->noOfSeatsPerRow = new int[noOfNewRows];
@@ -87,7 +72,8 @@ class Location {
 		Location() {
 			cout << endl << "Calling location default constructor";
 		}
-		Location(int noOfSeats, int noOfRows, int* noOfSeatsPerRow) {
+		Location(int noOfZones, int noOfSeats, int noOfRows, int* noOfSeatsPerRow) {
+			this->setNoOfZones(noOfZones);
 			this->setNoOfSeats(noOfSeats);
 			this->setNoOfRows(noOfRows);
 			this->setNoOfSeatsPerRow(noOfSeatsPerRow,noOfRows);
@@ -96,23 +82,22 @@ class Location {
 			cout << endl << "Copy constructor";
 			this->setNoOfRows(location.noOfRows);
 			this->setNoOfSeats(location.noOfSeats);
-			this->setZones(location.noOfZones);
+			this->setNoOfZones(location.noOfZones);
 			this->setNoOfSeatsPerRow(location.noOfSeatsPerRow,location.noOfRows);
 		}
 		void print() {
 			for (int i = 0; i < noOfRows; i++) {
-				cout << endl << "Number of seats on row " << i << "is :" << this->noOfSeatsPerRow[i];
+				cout << endl << "Number of seats on row " << i << " is :" << this->noOfSeatsPerRow[i];
 			}
 			cout << endl << "The number of zones is: " << this->noOfZones;
 			cout << endl << "The number of seats is: " << this->noOfSeats;
 			cout << endl << "The number of rows is: " << this->noOfRows;
 		}
-		int totalNoOfSeats() {
+		int getTotalNoOfSeats() {
 			int s = 0;
 			for (int i = 0; i < this->noOfRows; i++) {
 				s = s + this->noOfSeatsPerRow[i];
 			}
-			s = s * this->noOfZones;
 			return s;
 		}
 		void operator=(const Location& location) {
