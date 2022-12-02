@@ -3,7 +3,7 @@
 #include<string>
 using namespace std;
 
-class location {
+class Location {
 
 	private:
 
@@ -27,7 +27,7 @@ class location {
 			return this->noOfSeats;
 		}
 		void setNoOfSeats(int noOfSeats) {
-			if (noOfSeats<location::MIN_NO_OF_SEATS || noOfSeats>location::MAX_NO_OF_SEATS) {
+			if (noOfSeats<Location::MIN_NO_OF_SEATS || noOfSeats>Location::MAX_NO_OF_SEATS) {
 				throw "Invalid number of seats";
 			}
 			this->noOfSeats = noOfSeats;
@@ -37,7 +37,7 @@ class location {
 			return this->noOfRows;
 		}
 		void setNoOfRows(int noOfRows) {
-			if (noOfRows<location::MIN_NO_OF_ROWS || noOfRows>location::MAX_NO_OF_ROWS) {
+			if (noOfRows<Location::MIN_NO_OF_ROWS || noOfRows>Location::MAX_NO_OF_ROWS) {
 				throw "Invalid number of rows";
 			}
 			this->noOfRows = noOfRows;
@@ -47,7 +47,7 @@ class location {
 			return this->noOfZones;
 		}
 		void setZones(int noOfZones) {
-			if (noOfZones<location::MIN_NO_OF_ZONES || noOfZones>location::MAX_NO_OF_ZONES) {
+			if (noOfZones<Location::MIN_NO_OF_ZONES || noOfZones>Location::MAX_NO_OF_ZONES) {
 				throw "Invalid zone";
 			}
 			this->noOfZones = noOfZones;
@@ -61,7 +61,7 @@ class location {
 				throw "The SeatsPerRow pointer is not alright";
 			}
 			for (int i = 0; i < noOfRows; i++) {
-				if (noOfNewSeatsPerRow[i] < location::MIN_SEATS_PER_ROW || noOfNewSeatsPerRow[i]>location::MAX_SEATS_PER_ROW) {
+				if (noOfNewSeatsPerRow[i] < Location::MIN_SEATS_PER_ROW || noOfNewSeatsPerRow[i]>Location::MAX_SEATS_PER_ROW) {
 					throw "Number of seats is not alright";
 				}
 			}
@@ -78,28 +78,44 @@ class location {
 			return copy;
 		}
 
-		~location() {
+		~Location() {
 			cout << endl << "Location destructor";
 			if (this->noOfSeatsPerRow != nullptr) {
 				delete[]this->noOfSeatsPerRow;
 			}
 		}
-		location() {
+		Location() {
 			cout << endl << "Calling location default constructor";
 		}
-		location(int noOfSeats, int noOfRows, int* noOfSeatsPerRow) {
+		Location(int noOfSeats, int noOfRows, int* noOfSeatsPerRow) {
 			this->setNoOfSeats(noOfSeats);
 			this->setNoOfRows(noOfRows);
 			this->setNoOfSeatsPerRow(noOfSeatsPerRow,noOfRows);
 		}
-		location(const location& location){
+		Location(const Location& location){
 			cout << endl << "Copy constructor";
 			this->setNoOfRows(location.noOfRows);
 			this->setNoOfSeats(location.noOfSeats);
 			this->setZones(location.noOfZones);
 			this->setNoOfSeatsPerRow(location.noOfSeatsPerRow,location.noOfRows);
 		}
-		void operator=(const location& location) {
+		void print() {
+			for (int i = 0; i < noOfRows; i++) {
+				cout << endl << "Number of seats on row " << i << "is :" << this->noOfSeatsPerRow[i];
+			}
+			cout << endl << "The number of zones is: " << this->noOfZones;
+			cout << endl << "The number of seats is: " << this->noOfSeats;
+			cout << endl << "The number of rows is: " << this->noOfRows;
+		}
+		int totalNoOfSeats() {
+			int s = 0;
+			for (int i = 0; i < this->noOfRows; i++) {
+				s = s + this->noOfSeatsPerRow[i];
+			}
+			s = s * this->noOfZones;
+			return s;
+		}
+		void operator=(const Location& location) {
 			if (this == &location) {
 				return;
 			}
@@ -118,8 +134,9 @@ class location {
 			}
 			else this->noOfSeatsPerRow = nullptr;
 		}
-		friend void operator<< (ostream& out, event event);
-		friend void operator>> (istream& in, event& event);
+		
+		friend void operator<< (ostream& out, Location& location);
+		friend void operator>> (istream& in, Location& location);
 		
 	private:
 
@@ -130,106 +147,41 @@ class location {
 		}
 		return copy;
 	}
-		
 };
 
-class event {
-	 
-	private:
-
-		char* name=nullptr;
-		string time=" ";
-		string date=" ";
-		string place = " ";
-		string duration = " ";
-
-		static int NO_EVENTS;
-		
-	public:
-
-		char* getName() {
-			char* nameCopy = new char[strlen(this->name) + 1];
-			strcpy(nameCopy, this->name);
-			return nameCopy;
-		}
-		void setName(const char* newName) {
-			if (this->name != nullptr) {
-				delete[] this->name;
-			}
-			this->name = new char[strlen(newName) + 1];
-			strcpy(this->name, newName);
-		}
-		string getTime() {
-			return this->time;
-		}
-		void setTime(string time) {
-			this->time = time;
-		}
-		string getDate() {
-			return this->date;
-		}
-		void setDate(string date) {
-			this->date = date;
-		}
-		string getPlace() {
-			return this->place;
-		}
-		void setPlace(string place) {
-			this->place = place;
-		}
-		string getDuration() {
-			return this->duration;
-		}
-		void setDuration(string duration) {
-			this->duration = duration;
-		}
-		~event() {
-			cout << endl << "Event destructor";
-			if (this->name != nullptr) {
-				delete[]this->name;
-			}
-			event::NO_EVENTS -= 1;
-		}
-		event() {
-			cout << endl << "Calling event default constructor";
-		}
-		event(char* name, string date, string place, string time) {
-			this->setName(name);
-			this->setDate(date);
-			this->setPlace(place);
-			this->setTime(time);
-		}
-		event(const event& event){
-			cout << endl << "Copy constructor";
-			this->setName(event.name);
-			this->setDate(event.date);
-			this->setDuration(event.duration);
-			this->setPlace(event.place);
-			this->setTime(event.time);
-		}
-		static int getNoEvents() {
-			return event::NO_EVENTS;
-		}
-		void operator=(const event& event) {
-			if (this == &event) {
-				return;
-			}
-			this->date = event.date;
-			this->duration = event.duration;
-			this->place = event.place;
-			this->time = event.time;
-			if (this->name) {
-				delete[]this->name;
-				this->name = nullptr;
-			}
-			if (event.name != nullptr) {
-				this->name = new char[strlen(event.name) + 1];
-				memcpy(this->name, event.name, strlen(event.name) + 1);
-			}
-			else this->name = nullptr;
-		}
-		friend void operator<< (ostream& out, event event);
-		friend void operator>> (istream& in, event& event);
-};
-
-int event::NO_EVENTS = 0;
+void operator<<(ostream& out, Location& location) {
+	out << endl << "Number of seats: " << location.noOfSeats;
+	out << endl << "Number of rows: " << location.noOfRows;
+	out << endl << "Number of zones: " << location.noOfZones;
+	out << endl << "Number of seats per row: ";
+	for (int i = 0; i < location.noOfRows; i++) {
+		out << location.noOfSeatsPerRow[i] << " ";
+	}
+}
+void operator>>(istream& in, Location& location) {
+	cout << endl << "Number of zones: ";
+	in >> location.noOfZones;
+	cout << endl << "Number of seats: ";
+	in >> location.noOfSeats;
+	cout << endl << "Number of rows: ";
+	in >> location.noOfRows;
+	cout << endl << "Number of seats per row: ";
+	if (location.noOfSeatsPerRow != nullptr) {
+		delete[]location.noOfSeatsPerRow;
+		location.noOfSeatsPerRow = nullptr;
+	}
+	location.noOfSeatsPerRow = new int[location.noOfRows];
+	for (int i = 0; i < location.noOfRows; i++) {
+		in >> location.noOfSeatsPerRow[i];
+	}
+}
+Location operator-(Location location, int val) {
+	Location result = location;
+	result.setNoOfSeats(location.getNoOfSeats() - val);
+	return result;
+}
+Location operator+(Location location, int val) {
+	Location result = location;
+	result.setNoOfSeats(location.getNoOfSeats() + val);
+	return result;
+}
