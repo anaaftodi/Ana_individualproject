@@ -3,6 +3,7 @@
 #include<string>
 #include "Event.h"
 #include "Location.h"
+#include"Ticket.h"
 using namespace std;
 
 int main() {
@@ -28,8 +29,19 @@ int main() {
 	//cin >> event1;
 	//cout << event1;
 
+	//Event event3 = event1;
+	//cout << event3;
+
 	//if (event1 != event2) cout << endl << "The events are different";
 
+	Ticket ticket1(7, "Ana Aftodi", 20, LAWN, 30);
+	ticket1.print();
+
+	//Ticket copy = ticket1;
+	//copy.print();
+
+	//cout << ticket1;
+	//cin >> ticket1;
 
 	return 0;
 }
