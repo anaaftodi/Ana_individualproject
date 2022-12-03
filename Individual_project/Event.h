@@ -82,6 +82,7 @@ public:
 		this->setDate(event.date);
 		this->setPlace(event.place);
 		this->setTime(event.time);
+		Event::NO_EVENTS += 1;
 	}
 	void print() {
 		cout << endl << "Event date: " << this->date;
@@ -104,7 +105,7 @@ public:
 		return newText;
 	}
 	static int getNoEvents() {
-		return Event::NO_EVENTS;
+		return NO_EVENTS;
 	}
 	void operator=(const Event& event) {
 		if (this == &event) {
@@ -122,6 +123,7 @@ public:
 			memcpy(this->name, event.name, strlen(event.name) + 1);
 		}
 		else this->name = nullptr;
+		Event::NO_EVENTS++;
 	}
 	bool operator!=(Event event) {
 		if (this->date != event.date) return true;

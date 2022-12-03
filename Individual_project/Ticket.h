@@ -116,8 +116,8 @@ class Ticket {
 		bool operator<(Ticket& ticket) {
 			return this->ticketPrice < ticket.ticketPrice;
 		}
-		bool operator>=(Ticket& ticket) {
-			return this->ticketPrice >= ticket.ticketPrice;
+		void operator*=(float x) {
+			 this->ticketPrice *= x;
 		}
 		friend void operator<<(ostream& out, Ticket& ticket);
 		friend void operator>>(istream& in, Ticket& ticket);

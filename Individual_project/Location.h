@@ -95,8 +95,10 @@ class Location {
 		}
 		int getTotalNoOfSeats() {
 			int s = 0;
-			for (int i = 0; i < this->noOfRows; i++) {
-				s = s + this->noOfSeatsPerRow[i];
+			for (int i = 0; i < this->noOfZones; i++) {
+				for (int j = 0; j < this->noOfRows; j++) {
+					s = s + this->noOfSeatsPerRow[i];
+				}
 			}
 			return s;
 		}
