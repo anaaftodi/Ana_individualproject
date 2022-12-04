@@ -146,8 +146,12 @@ void operator>>(istream& in, Ticket& ticket) {
 	strcpy(ticket.guestName, buffer);
 	cout << endl << "Guest's age: ";
 	in >> ticket.guestAge;
+	if (ticket.guestAge < 0) 
+		cout << endl << "The age of the guest is wrong";
 	cout << endl << "Ticket price: ";
 	in >> ticket.ticketPrice;
+	if (ticket.ticketPrice < 0)
+		cout << endl << "The ticket price is wrong";
 	cout << endl << "What kind of ticket would you like? ";
 	int type;
 	in >> type;
@@ -159,10 +163,13 @@ void operator>>(istream& in, Ticket& ticket) {
 		ticket.type = TRIBUNE;
 	if (type == BOX) 
 		ticket.type = BOX;
+	if (type == OTHER)
+		ticket.type = OTHER;
 }
 void operator<<(ostream& out, Ticket& ticket) {
 	out << endl << (ticket.guestName != nullptr ? "Guest's name: " + string(ticket.guestName) : "John Doe");
 	out << endl << "Guest's age: " << ticket.guestAge;
 	out << endl << "Ticket price: " << ticket.ticketPrice;
 	out << endl << "Ticket type: " << ticket.type;
+	out << endl << "Ticket ID: " << ticket.ticketId;
 }

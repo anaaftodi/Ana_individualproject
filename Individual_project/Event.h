@@ -1,5 +1,6 @@
 #pragma once
 #include<iostream>
+#include<regex>
 #include <string>
 using namespace std;
 
@@ -149,11 +150,41 @@ public:
 
 int Event::NO_EVENTS = 0;
 
+bool validName(const char* name) {
+	if (strlen(name) < Event::MIN_NAME_SIZE) return false;
+	else return true;
+}
+
+//https://www.oreilly.com/library/view/regular-expressions-cookbook/9781449327453/ch04s04.html
+
+bool validDate(string date) {
+	regex pattern("^(1[0-2]|0[1-9])/(3[01]|[12][0-9]|0[1-9])/[0-9]{4}$");
+	smatch x;
+	regex_search(date, x, pattern);
+	if (x[0].matched == true) return true;
+	else return false;
+}
+bool validTime(string time) {
+	regex pattern("([01]?[0-9]|2[0-3]):[0-5][0-9]");
+	smatch x;
+	regex_search(time, x, pattern);
+	if (x[0].matched == true) return true;
+	else return false;
+}
+
 void operator>>(istream& in, Event& event) {
 	cout << endl << "Event date: ";
 	in >> event.date;
+	while (validDate(event.date) == false) {
+		cout << endl << "Date is not ok";
+		in >> event.date;
+	}
 	cout << endl << "Event time: ";
 	in >> event.time;
+	while (validTime(event.time) == false) {
+		cout << endl << "Time is not ok";
+		in >> event.time;
+	}
 	cout << endl << "Event place: ";
 	in >> event.place;
 	cout << endl << "Event name: ";
@@ -165,6 +196,16 @@ void operator>>(istream& in, Event& event) {
 	}
 	event.name = new char[strlen(buffer) + 1];
 	strcpy(event.name, buffer);
+	while (validName(event.name) == false) {
+		cout << "Name is too short";
+		in >> buffer;
+		if (event.name != nullptr) {
+			delete[]event.name;
+			event.name = nullptr;
+		}
+		event.name = new char[strlen(buffer) + 1];
+		strcpy(event.name, buffer);
+	}
 }
 void operator<<(ostream& out, Event& event) {
 	out << endl << "Event date: " << event.date;
