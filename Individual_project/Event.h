@@ -9,9 +9,8 @@ class Event{
 private:
 
 	char* name = nullptr;
-	string time = " ";
-	string date = " ";
-	string place = " ";
+	string time = "10:00";
+	string date = "10/10/2010";
 
 	static int NO_EVENTS;
 
@@ -25,7 +24,7 @@ public:
 	}
 	void setName(const char* name) {
 		if (strlen(name) < Event::MIN_NAME_SIZE) {
-			throw "Invalid name";
+			throw "Wrong name";
 		}
 		if (this->name != nullptr) {
 			delete[] this->name;
@@ -37,24 +36,28 @@ public:
 		return this->time;
 	}
 	void setTime(string time) {
-		this->time = time;
+		regex pattern("([01]?[0-9]|2[0-3]):[0-5][0-9]");
+		smatch x;
+		regex_search(time, x, pattern);
+		if (x[0].matched == false)
+			cout << endl << "Wrong time";
+		else this->time = time;
 	}
 	string getDate() {
 		return this->date;
 	}
 	void setDate(string date) {
-		this->date = date;
-	}
-	string getPlace() {
-		return this->place;
-	}
-	void setPlace(string place) {
-		this->place = place;
+		regex pattern("^(1[0-2]|0[1-9])/(3[01]|[12][0-9]|0[1-9])/[0-9]{4}$");
+		smatch x;
+		regex_search(date, x, pattern);
+		if (x[0].matched == false)
+			cout << endl << "Wrong date";
+		else this->date = date;
 	}
 	~Event() {
 		cout << endl << "Event destructor";
 		this->deleteEvent();
-		Event::NO_EVENTS -= 1;
+		Event::NO_EVENTS--;
 	}
 	void deleteEvent(){
 		if (this->name != nullptr) {
@@ -63,32 +66,27 @@ public:
 		}
 	}
 	Event() {
-		this->setDate("Unknown");
-		this->setTime("Unknown");
 		this->setName("Event");
 		cout << endl << "Calling event default constructor";
-		Event::NO_EVENTS += 1;
+		Event::NO_EVENTS ++;
 	}
-	Event(const char* name, string date, string place, string time) {
+	Event(const char* name, string date, string time) {
 		this->setName(name);
 		this->setDate(date);
-		this->setPlace(place);
 		this->setTime(time);
 
-		Event::NO_EVENTS += 1;
+		Event::NO_EVENTS++;
 	}
 	Event(const Event& event) {
 		cout << endl << "Copy constructor";
 		this->setName(event.name);
 		this->setDate(event.date);
-		this->setPlace(event.place);
 		this->setTime(event.time);
-		Event::NO_EVENTS += 1;
+		Event::NO_EVENTS++;
 	}
 	void print() {
 		cout << endl << "Event date: " << this->date;
 		cout << endl << "Event time: " << this->time;
-		cout << endl << "Event place: " << this->place;
 		if(this->name!=nullptr)
 			cout << endl << "Event name: " << this->name;
 	}
@@ -113,7 +111,6 @@ public:
 			return;
 		}
 		this->date = event.date;
-		this->place = event.place;
 		this->time = event.time;
 		if (this->name) {
 			delete[]this->name;
@@ -124,14 +121,13 @@ public:
 			memcpy(this->name, event.name, strlen(event.name) + 1);
 		}
 		else this->name = nullptr;
-		Event::NO_EVENTS++;
 	}
 	bool operator!=(Event event) {
 		if (this->date != event.date) return true;
 		else return false;
 	}
 	bool operator==(Event event) {
-		if (this->date == event.date && this->time == event.time && this->place == event.place) return true;
+		if (this->date == event.date && this->time == event.time) return true;
 		else return false;
 	}
 	friend void operator<< (ostream& out, Event& event);
@@ -150,43 +146,37 @@ public:
 
 int Event::NO_EVENTS = 0;
 
-bool validName(const char* name) {
-	if (strlen(name) < Event::MIN_NAME_SIZE) return false;
-	else return true;
-}
-
 //https://www.oreilly.com/library/view/regular-expressions-cookbook/9781449327453/ch04s04.html
 
-bool validDate(string date) {
+	bool validDate(string date) {
 	regex pattern("^(1[0-2]|0[1-9])/(3[01]|[12][0-9]|0[1-9])/[0-9]{4}$");
 	smatch x;
 	regex_search(date, x, pattern);
 	if (x[0].matched == true) return true;
 	else return false;
 }
-bool validTime(string time) {
+	bool validTime(string time) {
 	regex pattern("([01]?[0-9]|2[0-3]):[0-5][0-9]");
 	smatch x;
 	regex_search(time, x, pattern);
 	if (x[0].matched == true) return true;
 	else return false;
 }
+	bool validName(const char* name) {
+	if (strlen(name) < Event::MIN_NAME_SIZE)
+		return false;
+	else return true;
+}
 
-void operator>>(istream& in, Event& event) {
+	void operator>>(istream& in, Event& event) {
 	cout << endl << "Event date: ";
 	in >> event.date;
-	while (validDate(event.date) == false) {
+	if (validDate(event.date) == false)
 		cout << endl << "Date is not ok";
-		in >> event.date;
-	}
 	cout << endl << "Event time: ";
 	in >> event.time;
-	while (validTime(event.time) == false) {
+	if (validTime(event.time) == false) 
 		cout << endl << "Time is not ok";
-		in >> event.time;
-	}
-	cout << endl << "Event place: ";
-	in >> event.place;
 	cout << endl << "Event name: ";
 	char buffer[100];
 	in >> buffer;
@@ -196,20 +186,13 @@ void operator>>(istream& in, Event& event) {
 	}
 	event.name = new char[strlen(buffer) + 1];
 	strcpy(event.name, buffer);
-	while (validName(event.name) == false) {
+	if (validName(event.name) == false)
 		cout << "Name is too short";
-		in >> buffer;
-		if (event.name != nullptr) {
-			delete[]event.name;
-			event.name = nullptr;
-		}
-		event.name = new char[strlen(buffer) + 1];
-		strcpy(event.name, buffer);
-	}
+	Event::NO_EVENTS += 1;
 }
-void operator<<(ostream& out, Event& event) {
-	out << endl << "Event date: " << event.date;
-	out << endl << "Event time: " << event.time;
-	out << endl << "Event place: " << event.place;
-	out << endl << (event.name != nullptr ? "Event name: " + string(event.name) : "No event name");
+	void operator<<(ostream& out, Event& event) {
+		out << endl << "Event date: " << event.date;
+		out << endl << "Event time: " << event.time;
+		if (event.name != nullptr)
+			out << endl << "Event name: " << event.name;
 }

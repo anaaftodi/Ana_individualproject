@@ -24,8 +24,8 @@ int main() {
 	location1 = location1 - 5;
 	cout << location1;
 
-	Event event1("Gala caritabila", "10 decembrie 2022", "Casa Poporului", "20:00");
-	Event event2("Gala caritabila", "7 decembrie 2022", "Ateneul Roman", "21:00");
+	Event event1("Gala caritabila", "10 decembrie 2022", "20:00");
+	Event event2("Gala caritabila", "7 decembrie 2022", "21:00");
 	event1.print();
 
 	//cin >> event1;

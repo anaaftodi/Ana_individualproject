@@ -5,51 +5,59 @@ using namespace std;
 
 class Location {
 
-	private:
+private:
 
-		int noOfSeats = 0;
-		int noOfRows = 0;
-		int noOfZones = 0;
-		int* noOfSeatsPerRow = nullptr;
+	int noOfSeats = 0;
+	int noOfRows = 0;
+	int noOfZones = 0;
+	int* noOfSeatsPerRow = nullptr;
 
-	public:
+public:
 
-		const static int MIN_SEATS_PER_ROW = 1;
-		const static int MAX_SEATS_PER_ROW = 50;
+	const static int MIN_SEATS_PER_ROW = 1;
+	const static int MAX_SEATS_PER_ROW = 50;
 
-		int getNoOfSeats() {
-			return this->noOfSeats;
+	int getNoOfSeats() {
+		return this->noOfSeats;
+	}
+	void setNoOfSeats(int noOfSeats) {
+		if (noOfSeats < 1) {
+			throw "Wrong number of seats";
 		}
-		void setNoOfSeats(int noOfSeats) {
-			this->noOfSeats = noOfSeats;
-		}
+		this->noOfSeats = noOfSeats;
+	}
 
-		int getNoOfRows() {
-			return this->noOfRows;
+	int getNoOfRows() {
+		return this->noOfRows;
+	}
+	void setNoOfRows(int noOfRows) {
+		if (noOfRows < 1) {
+			throw "Wrong number of rows";
 		}
-		void setNoOfRows(int noOfRows) {
-			this->noOfRows = noOfRows;
-		}
+		this->noOfRows = noOfRows;
+	}
 
-		int getNoOfZones() {
-			return this->noOfZones;
+	int getNoOfZones() {
+		return this->noOfZones;
+	}
+	void setNoOfZones(int noOfZones) {
+		if (noOfZones < 1) {
+			throw "Wrong number of zones";
 		}
-		void setNoOfZones(int noOfZones) {
-			this->noOfZones = noOfZones;
-		}
+		this->noOfZones = noOfZones;
+	}
 
-		void setNoOfSeatsPerRow(int* noOfNewSeatsPerRow, int noOfNewRows) {
-			if (noOfNewRows <= 0) {
-				throw "Number of rows is not alright";
+	void setNoOfSeatsPerRow(int* noOfNewSeatsPerRow, int noOfNewRows) {
+		if (noOfNewRows <= 0) {
+			throw "Number of rows is not alright";
+		}
+		if (noOfNewSeatsPerRow == nullptr) {
+			throw "The SeatsPerRow pointer is not alright";
+		}
+		for (int i = 0; i < noOfRows; i++) {
+			if (noOfNewSeatsPerRow[i] < Location::MIN_SEATS_PER_ROW || noOfNewSeatsPerRow[i]>Location::MAX_SEATS_PER_ROW) {
+				throw "Number of seats is not alright";
 			}
-			if (noOfNewSeatsPerRow == nullptr) {
-				throw "The SeatsPerRow pointer is not alright";
-			}
-			/*for (int i = 0; i < noOfRows; i++) {
-				if (noOfNewSeatsPerRow[i] < Location::MIN_SEATS_PER_ROW || noOfNewSeatsPerRow[i]>Location::MAX_SEATS_PER_ROW) {
-					throw "Number of seats is not alright";
-				}
-			}*/
 			if (this->noOfSeatsPerRow != nullptr)
 				delete[] this->noOfSeatsPerRow;
 			this->noOfSeatsPerRow = new int[noOfNewRows];
@@ -58,11 +66,11 @@ class Location {
 			}
 			this->noOfRows = noOfNewRows;
 		}
-		int* getNoSeatsPerRow() {
+	}
+		int* getNoOfSeatsPerRow() {
 			int* copy = this->copyArray(this->noOfSeatsPerRow, this->noOfRows);
 			return copy;
 		}
-
 		~Location() {
 			cout << endl << "Location destructor";
 			if (this->noOfSeatsPerRow != nullptr) {
@@ -76,17 +84,17 @@ class Location {
 			this->setNoOfZones(noOfZones);
 			this->setNoOfSeats(noOfSeats);
 			this->setNoOfRows(noOfRows);
-			this->setNoOfSeatsPerRow(noOfSeatsPerRow,noOfRows);
+			this->setNoOfSeatsPerRow(noOfSeatsPerRow, noOfRows);
 		}
-		Location(const Location& location){
+		Location(const Location & location) {
 			cout << endl << "Copy constructor";
 			this->setNoOfRows(location.noOfRows);
 			this->setNoOfSeats(location.noOfSeats);
 			this->setNoOfZones(location.noOfZones);
-			this->setNoOfSeatsPerRow(location.noOfSeatsPerRow,location.noOfRows);
+			this->setNoOfSeatsPerRow(location.noOfSeatsPerRow, location.noOfRows);
 		}
 		void print() {
-			for (int i = 0; i < noOfRows; i++) {
+			for (int i = 1; i < noOfRows; i++) {
 				cout << endl << "Number of seats on row " << i << " is :" << this->noOfSeatsPerRow[i];
 			}
 			cout << endl << "The number of zones is: " << this->noOfZones;
@@ -102,7 +110,7 @@ class Location {
 			}
 			return s;
 		}
-		void operator=(const Location& location) {
+		void operator=(const Location & location) {
 			if (this == &location) {
 				return;
 			}
@@ -114,20 +122,20 @@ class Location {
 				this->noOfSeatsPerRow = nullptr;
 			}
 			if (location.noOfSeatsPerRow != nullptr) {
-				this->noOfSeatsPerRow = new int[location.noOfRows + 1];
+				this->noOfSeatsPerRow = new int[location.noOfRows];
 				for (int i = 0; i < location.noOfRows; i++) {
 					this->noOfSeatsPerRow[i] = location.noOfSeatsPerRow[i];
 				}
 			}
 			else this->noOfSeatsPerRow = nullptr;
 		}
-		
-		friend void operator<< (ostream& out, Location& location);
-		friend void operator>> (istream& in, Location& location);
-		
-	private:
 
-		static int* copyArray(int* array, int noElements) {
+		friend void operator<< (ostream & out, Location & location);
+		friend void operator>> (istream & in, Location & location);
+
+private:
+
+	static int* copyArray(int* array, int noElements) {
 		int* copy = new int[noElements];
 		for (int i = 0; i < noElements; i++) {
 			copy[i] = array[i];
@@ -136,39 +144,67 @@ class Location {
 	}
 };
 
-void operator<<(ostream& out, Location& location) {
-	out << endl << "Number of seats: " << location.noOfSeats;
-	out << endl << "Number of rows: " << location.noOfRows;
-	out << endl << "Number of zones: " << location.noOfZones;
-	out << endl << "Number of seats per row: ";
-	for (int i = 0; i < location.noOfRows; i++) {
-		out << location.noOfSeatsPerRow[i] << " ";
+	bool validateNoOfSeats(int noOfSeats) {
+		if (noOfSeats < 1) return false;
+		else return true;
 	}
-}
-void operator>>(istream& in, Location& location) {
-	cout << endl << "Number of zones: ";
-	in >> location.noOfZones;
-	cout << endl << "Number of seats: ";
-	in >> location.noOfSeats;
-	cout << endl << "Number of rows: ";
-	in >> location.noOfRows;
-	cout << endl << "Number of seats per row: ";
-	if (location.noOfSeatsPerRow != nullptr) {
-		delete[]location.noOfSeatsPerRow;
-		location.noOfSeatsPerRow = nullptr;
+	bool validateNoOfZones(int noOfZones) {
+		if (noOfZones < 1) return false;
+		else return true;
 	}
-	location.noOfSeatsPerRow = new int[location.noOfRows];
-	for (int i = 0; i < location.noOfRows; i++) {
-		in >> location.noOfSeatsPerRow[i];
+	bool validateNoOfRows(int noOfRows) {
+		if (noOfRows < 1) return false;
+		else return true;
 	}
-}
-Location operator-(Location location, int val) {
-	Location result = location;
-	result.setNoOfSeats(location.getNoOfSeats() - val);
-	return result;
-}
-Location operator+(Location location, int val) {
-	Location result = location;
-	result.setNoOfSeats(location.getNoOfSeats() + val);
-	return result;
-}
+	bool validateNoOfSeatsPerRow(int* noOfSeatsPerRow, int noOfRows) {
+		for (int i = 0; i < noOfRows; i++) {
+			if (noOfSeatsPerRow[i]<Location::MIN_SEATS_PER_ROW || noOfSeatsPerRow[i]>Location::MAX_SEATS_PER_ROW)
+				return false;
+			else return true;
+		}
+	}
+
+	void operator<<(ostream& out, Location& location) {
+		out << endl << "Number of seats: " << location.noOfSeats;
+		out << endl << "Number of rows: " << location.noOfRows;
+		out << endl << "Number of zones: " << location.noOfZones;
+		out << endl << "Number of seats per row: ";
+		for (int i = 0; i < location.noOfRows; i++) {
+			out << location.noOfSeatsPerRow[i] << " ";
+		}
+	}
+	void operator>>(istream& in, Location& location) {
+		cout << endl << "Number of zones: ";
+		in >> location.noOfZones;
+		if (validateNoOfZones(location.noOfZones) == false)
+		cout << endl << "Wrong number of zones";
+		cout << endl << "Number of seats: ";
+		in >> location.noOfSeats;
+		if (validateNoOfSeats(location.noOfSeats) == false)
+			cout << endl << "Wrong number of seats";
+		cout << endl << "Number of rows: ";
+		in >> location.noOfRows;
+		if (validateNoOfRows(location.noOfRows) == false)
+			cout << endl << "Wrong number of rows";
+		cout << endl << "Number of seats per row: ";
+		if (location.noOfSeatsPerRow != nullptr) {
+			delete[]location.noOfSeatsPerRow;
+			location.noOfSeatsPerRow = nullptr;
+		}
+		location.noOfSeatsPerRow = new int[location.noOfRows];
+		for (int i = 0; i < location.noOfRows; i++) {
+			in >> location.noOfSeatsPerRow[i];
+			if (validateNoOfSeatsPerRow(location.noOfSeatsPerRow,location.noOfRows) == false)
+				cout << endl << "Wrong number of seats per row";
+		}
+	}
+	Location operator-(Location location, int val) {
+		Location result = location;
+		result.setNoOfSeats(location.getNoOfSeats() - val);
+		return result;
+	}
+	Location operator+(Location location, int val) {
+		Location result = location;
+		result.setNoOfSeats(location.getNoOfSeats() + val);
+		return result;
+	}

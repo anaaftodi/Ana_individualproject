@@ -1,9 +1,11 @@
 #pragma once
 #include<iostream>
 #include<string>
+#include<stdlib.h>
+#include<time.h>
 using namespace std;
 
-enum TicketType {VIP, TRIBUNE,LAWN,BOX,OTHER};
+enum TicketType {VIP, TRIBUNE, LAWN, BOX, OTHER};
 
 class Ticket {
 
@@ -27,6 +29,9 @@ class Ticket {
 			this->type = (TicketType)type;
 		}
 		void setTicketPrice(int ticketPrice) {
+			if (ticketPrice <= 0) {
+				throw "Wrong price";
+			}
 			this->ticketPrice = ticketPrice;
 		}
 		double getTicketPrice() {
@@ -85,6 +90,7 @@ class Ticket {
 		}
 		void print() {
 			cout << endl << "The ticket ID is: " << this->ticketId;
+			cout << endl << "The ticket price is: " << this->ticketPrice;
 			if (this->guestName != nullptr) {
 				cout << endl << "The guest name is: " << this->guestName;
 			}
@@ -97,7 +103,6 @@ class Ticket {
 				cout << "LAWN";
 			if (this->type == 3) 
 				cout << "BOX";
-			cout << endl << "The ticket price is: " << this->ticketPrice;
 		}
 		double ticketDiscount() {
 			double newTicketPrice = 0;
@@ -108,7 +113,16 @@ class Ticket {
 			if (this == &ticket) {
 				return;
 			}
-			this->guestName = ticket.guestName;
+			if (this->guestName) {
+				delete[]this->guestName;
+				this->guestName = nullptr;
+			}
+			if (ticket.guestName != nullptr) {
+				this->guestName = new char[strlen(ticket.guestName) + 1];
+				strcpy(this->guestName, ticket.guestName);
+			}
+			else
+				this->guestName = nullptr;
 			this->guestAge = ticket.guestAge;
 			this->ticketPrice = ticket.ticketPrice;
 			this->type = ticket.type;
@@ -134,7 +148,26 @@ class Ticket {
 		}
 };
 
-void operator>>(istream& in, Ticket& ticket) {
+bool validateName(const char* guestName) {
+	if (strlen(guestName) < Ticket::MIN_NAME_SIZE)
+		return false;
+	else return true;
+}
+bool validatePrice(double ticketPrice) {
+	if (ticketPrice <= 0) return false;
+	else return true;
+}
+bool validateAge(int guestAge) {
+	if (guestAge < Ticket::MIN_AGE)
+		return false;
+	else return true;
+}
+
+	void operator>>(istream& in, Ticket& ticket) {
+	srand(time(0));
+	cout << endl << "Ticket ID: ";
+	int id = rand();
+	cout << id;
 	cout << endl << "Guest's name: ";
 	char buffer[100];
 	in >> buffer;
@@ -144,30 +177,37 @@ void operator>>(istream& in, Ticket& ticket) {
 	}
 	ticket.guestName = new char[strlen(buffer) + 1];
 	strcpy(ticket.guestName, buffer);
+	if (validateName(ticket.guestName) == false)
+		cout << endl << "Wrong name";
 	cout << endl << "Guest's age: ";
 	in >> ticket.guestAge;
-	if (ticket.guestAge < 0) 
-		cout << endl << "The age of the guest is wrong";
+	if (validateAge(ticket.guestAge) == false)
+		cout << endl << "Wrong age";
 	cout << endl << "Ticket price: ";
 	in >> ticket.ticketPrice;
-	if (ticket.ticketPrice < 0)
-		cout << endl << "The ticket price is wrong";
+	if (validatePrice(ticket.ticketPrice) == false)
+		cout << endl << "Wrong price";
 	cout << endl << "What kind of ticket would you like? ";
-	int type;
-	in >> type;
-	if (type == VIP) 
+
+	//https://www.geeksforgeeks.org/conversion-whole-string-uppercase-lowercase-using-stl-c/
+
+	string k;
+	in >> k;
+	transform(k.begin(), k.end(), k.begin(), ::toupper);
+	if (k == "VIP")
 		ticket.type = VIP;
-	if (type == LAWN) 
+	if (k == "LAWN")
 		ticket.type = LAWN;
-	if (type == TRIBUNE) 
+	if (k == "TRIBUNE")
 		ticket.type = TRIBUNE;
-	if (type == BOX) 
+	if (k == "BOX") 
 		ticket.type = BOX;
-	if (type == OTHER)
+	if (k == "OTHER")
 		ticket.type = OTHER;
 }
 void operator<<(ostream& out, Ticket& ticket) {
-	out << endl << (ticket.guestName != nullptr ? "Guest's name: " + string(ticket.guestName) : "John Doe");
+	if (ticket.guestName != nullptr)
+		out << endl << "Guest's name: " << ticket.guestName;
 	out << endl << "Guest's age: " << ticket.guestAge;
 	out << endl << "Ticket price: " << ticket.ticketPrice;
 	out << endl << "Ticket type: " << ticket.type;
