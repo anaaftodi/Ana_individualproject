@@ -59,5 +59,7 @@ int main() {
 	cout << bilet;
 
 	cout << endl << ticket1.ticketDiscount();
+
+
 	return 0;
 }
