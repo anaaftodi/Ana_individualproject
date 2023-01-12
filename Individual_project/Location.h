@@ -93,13 +93,22 @@ public:
 			this->setNoOfZones(location.noOfZones);
 			this->setNoOfSeatsPerRow(location.noOfSeatsPerRow, location.noOfRows);
 		}
-		void print() {
+		virtual void print() {
 			for (int i = 1; i < noOfRows; i++) {
 				cout << endl << "Number of seats on row " << i << " is :" << this->noOfSeatsPerRow[i];
 			}
 			cout << endl << "The number of zones is: " << this->noOfZones;
 			cout << endl << "The number of seats is: " << this->noOfSeats;
 			cout << endl << "The number of rows is: " << this->noOfRows;
+		}
+		virtual void emptySeats() {
+			int s = 0;
+			for (int i = 0; i < this->noOfZones; i++) {
+				for (int j = 0; j < this->noOfRows; j++) {
+					s += this->noOfSeatsPerRow[j];
+				}
+			}
+			cout << endl << "Empty seats for purchase: " << s;
 		}
 		int getTotalNoOfSeats() {
 			int s = 0;
@@ -176,16 +185,22 @@ private:
 	void operator>>(istream& in, Location& location) {
 		cout << endl << "Number of zones: ";
 		in >> location.noOfZones;
-		if (validateNoOfZones(location.noOfZones) == false)
-		cout << endl << "Wrong number of zones";
+		while (validateNoOfZones(location.noOfZones) == false) {
+			cout << endl << "Wrong number of zones, please try again";
+			in >> location.noOfZones;
+		}
 		cout << endl << "Number of seats: ";
 		in >> location.noOfSeats;
-		if (validateNoOfSeats(location.noOfSeats) == false)
-			cout << endl << "Wrong number of seats";
+		while (validateNoOfSeats(location.noOfSeats) == false) {
+			cout << endl << "Wrong number of seats, please try again";
+			in >> location.noOfSeats;
+		}
 		cout << endl << "Number of rows: ";
 		in >> location.noOfRows;
-		if (validateNoOfRows(location.noOfRows) == false)
+		while (validateNoOfRows(location.noOfRows) == false) {
 			cout << endl << "Wrong number of rows";
+			in >> location.noOfRows;
+		}
 		cout << endl << "Number of seats per row: ";
 		if (location.noOfSeatsPerRow != nullptr) {
 			delete[]location.noOfSeatsPerRow;
@@ -194,8 +209,18 @@ private:
 		location.noOfSeatsPerRow = new int[location.noOfRows];
 		for (int i = 0; i < location.noOfRows; i++) {
 			in >> location.noOfSeatsPerRow[i];
-			if (validateNoOfSeatsPerRow(location.noOfSeatsPerRow,location.noOfRows) == false)
-				cout << endl << "Wrong number of seats per row";
+			while (validateNoOfSeatsPerRow(location.noOfSeatsPerRow, location.noOfRows) == false) {
+				cout << endl << "Wrong number of seats per row, please try again";
+				if (location.noOfSeatsPerRow != nullptr) {
+					delete[]location.noOfSeatsPerRow;
+					location.noOfSeatsPerRow = nullptr;
+				}
+				location.noOfSeatsPerRow = new int[location.noOfRows];
+				for (int i = 1; i < location.noOfRows; i++) {
+					cout << endl << "Row number " << i << ": ";
+					in >> location.noOfSeatsPerRow[i];
+				}
+			}
 		}
 	}
 	Location operator-(Location location, int val) {
@@ -208,3 +233,19 @@ private:
 		result.setNoOfSeats(location.getNoOfSeats() + val);
 		return result;
 	}
+
+	class smokingZones : public Location {
+		int noSmokingZones = 0;
+	public:
+		smokingZones(int noSmokingZones, int noOfZones, int noOfSeats, int noOfRows, int* noOfSeatsPerRow) :Location(noOfZones, noOfSeats, noOfRows, noOfSeatsPerRow), noSmokingZones(noSmokingZones) {
+
+		}
+		void print() {
+			this->Location::print();
+			cout << endl << "Number of smoking zones: " << this->noSmokingZones;
+		}
+		void emptySeats() {
+			this->Location::emptySeats();
+			cout << endl << "Number of available seats in a non smoking zone: " << Location::getTotalNoOfSeats() - this->noSmokingZones;
+		}
+	};

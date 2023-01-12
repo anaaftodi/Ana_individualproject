@@ -12,6 +12,7 @@ private:
 	string time = "10:00";
 	string date = "10/10/2010";
 
+protected:
 	static int NO_EVENTS;
 
 public:
@@ -84,11 +85,14 @@ public:
 		this->setTime(event.time);
 		Event::NO_EVENTS++;
 	}
-	void print() {
+	virtual void print() {
 		cout << endl << "Event date: " << this->date;
 		cout << endl << "Event time: " << this->time;
 		if(this->name!=nullptr)
 			cout << endl << "Event name: " << this->name;
+	}
+	virtual void invitationsPerEvent() {
+		cout << endl << "Number of events: " << Event::NO_EVENTS;
 	}
 	char* capitalizeFirstLetter(const char* text) {
 		char* newText = new char[strlen(text) + 1];
@@ -144,6 +148,23 @@ public:
 		}
 };
 
+class eventInvitations :public Event {
+	int noInvitations = 0;
+
+public:
+	eventInvitations(int noInvitations, const char* name, string date, string time) :Event(name, date, time), noInvitations(noInvitations) {
+
+	}
+	void print() {
+		this->Event::print();
+		cout << endl << "Number of invitations: " << this->noInvitations;
+	}
+	void invitationsPerEvent() {
+		this->Event::invitationsPerEvent();
+		cout << endl << "Number of invitations given in total: " << this->noInvitations * Event::NO_EVENTS;
+	}
+};
+
 int Event::NO_EVENTS = 0;
 
 //https://www.oreilly.com/library/view/regular-expressions-cookbook/9781449327453/ch04s04.html
@@ -171,12 +192,16 @@ int Event::NO_EVENTS = 0;
 	void operator>>(istream& in, Event& event) {
 	cout << endl << "Event date: ";
 	in >> event.date;
-	if (validDate(event.date) == false)
-		cout << endl << "Date is not ok";
+	while (validDate(event.date) == false) {
+		cout << endl << "Date is not ok, please retry";
+		in >> event.date;
+	}
 	cout << endl << "Event time: ";
 	in >> event.time;
-	if (validTime(event.time) == false) 
-		cout << endl << "Time is not ok";
+	while (validTime(event.time) == false) {
+		cout << endl << "Time is not ok, please retry";
+		in >> event.time;
+	}
 	cout << endl << "Event name: ";
 	char buffer[100];
 	in >> buffer;
@@ -186,8 +211,16 @@ int Event::NO_EVENTS = 0;
 	}
 	event.name = new char[strlen(buffer) + 1];
 	strcpy(event.name, buffer);
-	if (validName(event.name) == false)
-		cout << "Name is too short";
+	while (validName(event.name) == false) {
+		cout << "Name is too short, please enter again";
+		in >> buffer;
+		if (event.name != nullptr) {
+			delete[]event.name;
+			event.name = nullptr;
+		}
+		event.name = new char[strlen(buffer) + 1];
+		strcpy(event.name, buffer);
+	}
 	Event::NO_EVENTS += 1;
 }
 	void operator<<(ostream& out, Event& event) {
